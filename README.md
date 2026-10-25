@@ -2,7 +2,7 @@
 
 **Euxenion** is a policy-enforcing proxy for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It is designed to mediate access to a single upstream MCP server using declarative policy, cryptographically verifiable authorization tickets, delegated trust, and human-in-the-loop approvals.
 
-> **Project status:** Early design / initial scaffolding. The proxy, CLI, ticket handling, and approval workflows described below are planned, not yet implemented. Do not rely on this repository to enforce security policy until the implementation has undergone testing and review.
+> **Project status:** Initial Go scaffolding. The `xenri` command supports only `help` and `version`; no MCP proxy, policy enforcement, authorization tickets, or approval workflow has been implemented. This repository cannot yet secure access to an MCP server.
 
 ## Why Euxenion?
 
@@ -39,7 +39,7 @@ Existing or enhanced MCP client
 Xenri: human-facing CLI and approval interface
 ```
 
-The proxy handles MCP transport and protocol interactions while keeping identity, canonical invocation construction, ticket verification, policy evaluation, approval state, and upstream dispatch as separate responsibilities. The initial implementation direction is **Go**, with an embedded policy engine (currently proposed: OPA/Rego) and a durable local state store (initially proposed: SQLite).
+The planned proxy will handle MCP transport and protocol interactions while keeping identity, canonical invocation construction, ticket verification, policy evaluation, approval state, and upstream dispatch as separate responsibilities. The project uses **Go**; an embedded policy engine (currently proposed: OPA/Rego) and a durable local state store (currently proposed: SQLite) remain design choices, not implemented dependencies.
 
 ### Authorization tickets
 
@@ -77,14 +77,30 @@ Approval applies to the specific invocation (and authenticated caller) by defaul
 
 The name suits an MCP proxy that mediates access between clients and upstream tools. Euxenion evaluates requests against policy and verified authorization evidence before forwarding permitted invocations.
 
-**Xenri** is a companion name built around the same *xen-* (“guest” or “stranger”) root. Its shorter, friendlier form suits the human-facing interface and planned CLI: a guide for operating the proxy, inspecting authorization tickets, understanding policy decisions, and coordinating approvals. The CLI may also provide local transport bridging, but a transport-only connector is not an enforcement boundary.
+**Xenri** is a companion name built around the same *xen-* (“guest” or “stranger”) root. Its shorter form suits the human-facing interface and CLI. The initial `xenri` executable offers help and version reporting; future commands will support proxy operation, ticket inspection, policy diagnostics, approvals, and potentially local transport bridging. A transport-only connector is not an enforcement boundary.
 
-Command names, configuration schema, and package layout are not yet stable. No working CLI commands are documented here until they actually exist.
+Proxy subcommands, configuration schemas, and authorization-related package layouts are not yet defined.
+
+## Development
+
+The initial CLI scaffold requires **Go 1.26 or newer** and has no external Go dependencies.
+
+```bash
+go run ./cmd/xenri help
+go run ./cmd/xenri version
+go test ./...
+go vet ./...
+go build ./cmd/xenri
+```
+
+The command intentionally does not accept proxy or approval subcommands yet. Its entry point is `cmd/xenri`; `internal/cli` contains testable argument handling separate from process exit and I/O setup. Future security-sensitive components will be introduced only alongside their protocol contracts and tests.
+
+CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions.
 
 ## Roadmap
 
 1. Define the MCP interception boundary, threat model, versioned ticket and challenge schemas, and policy contract.
-2. Scaffold the Go module, `xenri` command, configuration validation, and continuous integration.
+2. Scaffold the Go module, minimal `xenri` command, and CI (this PR); add configuration schema and validation before implementing proxy operations.
 3. Implement transparent single-upstream MCP transport and identity propagation.
 4. Add signature verification, canonical invocation binding, policy evaluation, and negative-path tests.
 5. Add durable approval state, atomic redemption, audit events, and enhanced-client interoperability.

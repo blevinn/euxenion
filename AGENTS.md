@@ -7,8 +7,8 @@ This file is the standing instruction set for contributors and coding agents wor
 - **Euxenion** is the policy-enforcing MCP proxy and underlying architecture.
 - **Xenri** is the planned human-facing interface/persona and CLI. Its convenient transport/client features do **not** substitute for server-side enforcement.
 - The initial boundary is **one downstream client connection to one configured upstream MCP server** per proxy instance; avoid silently expanding the trust boundary or introducing implicit multi-upstream routing.
-- The implementation direction is **Go**, with explicit interfaces between MCP transport, authenticated identity, ticket verification, policy evaluation, approval/redemption state, and auditing. OPA/Rego, Ed25519 JWS/JWT, and SQLite are current design choices requiring a concrete ADR/spec before being treated as stable APIs.
-- This repository currently contains design/scaffolding documents, not a working authorization proxy. Do not invent commands, green tests, or operational guarantees.
+- The project uses **Go**. `cmd/xenri` is the executable entry point and `internal/cli` contains CLI argument handling. Keep future MCP transport, authenticated identity, ticket verification, policy evaluation, approval/redemption state, and auditing separate. OPA/Rego, Ed25519 JWS/JWT, and SQLite remain proposals requiring a concrete ADR/spec before becoming stable APIs.
+- This repository now has a `xenri` CLI skeleton supporting only `help` and `version`; it does not contain a working authorization proxy. Do not invent commands, green tests, or operational guarantees.
 
 ## Non-negotiable workflow
 
@@ -50,7 +50,7 @@ When an agent changes a PR after opening it, update both blocks to match the fin
 
 ## Implementation and testing expectations
 
-- Prefer standard Go tooling: `gofmt`, `go test`, static analysis, race tests, and minimal justified dependencies **once a Go module exists**. Do not report these as run before code is present.
+- Use `gofmt`, `go vet ./...`, `go test -race ./...`, and `go build ./cmd/xenri` for the Go module. Keep dependencies minimal and justified. CI covers Go 1.26 and 1.27; do not report checks as run unless they actually were.
 - Keep transport adapters separate from the authorization core; inject time, key lookup, persistence, and upstream dispatch so security paths can be deterministically tested.
 - Model policy outcomes and error classes with explicit types. Avoid boolean shortcuts that conflate `deny`, `require`, and evaluation failure.
 - Validate configuration strictly, including trust anchors, issuer/audience relationships, and unsafe defaults. Favor versioned schema changes and migrations over silent reinterpretation.
