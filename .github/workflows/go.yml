@@ -60,7 +60,16 @@ jobs:
             command -v go
             command -v gofmt
             command -v git
+            command -v just
             go version
-            go vet ./...
-            go test -race ./...
+            just --list
+            just --list build
+            just --list check
+            just check
+            just check ci
+            just build cli
+            just build
+            test -x dist/xenri
+            just fmt
+            git diff --exit-code -- cmd/xenri internal/cli
           '

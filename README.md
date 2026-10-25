@@ -93,21 +93,23 @@ go version   # Go 1.27 from the pinned nixpkgs input
 gofmt -h     # available with Go
 ```
 
-The dev shell provides Go (including `gofmt`), Git, and the C toolchain needed for `go test -race`. It supports Linux and macOS on x86-64 and ARM64. The committed `flake.lock` fixes the nixpkgs revision for reproducible environments; Nix must have flakes enabled. Work from the PR branch when validating a PR; otherwise the branch-specific diff checks will not match.
+The dev shell provides Go (including `gofmt`), `just`, Git, and the C toolchain needed for `go test -race`. It supports Linux and macOS on x86-64 and ARM64. The committed `flake.lock` fixes the nixpkgs revision for reproducible environments; Nix must have flakes enabled. Work from the PR branch when validating a PR; otherwise the branch-specific diff checks will not match.
 
-Once inside the shell:
+Once inside the shell, use the modular [Just](https://just.systems/) recipes:
 
 ```bash
-go run ./cmd/xenri help
-go run ./cmd/xenri version
-go test ./...
-go vet ./...
-go build ./cmd/xenri
+just build       # build all supported targets (currently the CLI)
+just build cli   # build dist/xenri
+just check       # check formatting, vet, and run tests
+just check ci    # include race tests, build, and CLI smoke tests
+just fmt         # format Go sources in place
 ```
+
+`build` and `check` are actual Just modules (`build.just` and `check.just`), not parameters on a single recipe. `just build` and `just check` invoke each module's default recipe. Output is written to the ignored `dist/` directory.
 
 The command intentionally does not accept proxy or approval subcommands yet. Its entry point is `cmd/xenri`; `internal/cli` contains testable argument handling separate from process exit and I/O setup. Future security-sensitive components will be introduced only alongside their protocol contracts and tests.
 
-CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions.
+CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions; its Nix job also exercises the Just recipes.
 
 ## Roadmap
 

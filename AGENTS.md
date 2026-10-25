@@ -8,7 +8,8 @@ This file is the standing instruction set for contributors and coding agents wor
 - **Xenri** is the planned human-facing interface/persona and CLI. Its convenient transport/client features do **not** substitute for server-side enforcement.
 - The initial boundary is **one downstream client connection to one configured upstream MCP server** per proxy instance; avoid silently expanding the trust boundary or introducing implicit multi-upstream routing.
 - The project uses **Go**. `cmd/xenri` is the executable entry point and `internal/cli` contains CLI argument handling. Keep future MCP transport, authenticated identity, ticket verification, policy evaluation, approval/redemption state, and auditing separate. OPA/Rego, Ed25519 JWS/JWT, and SQLite remain proposals requiring a concrete ADR/spec before becoming stable APIs.
-- Run `nix develop` to obtain a development Go toolchain, `gofmt`, Git, and a compiler for race-enabled tests; `flake.nix` and `flake.lock` pin nixpkgs and select Go 1.27. Prefer this environment for local verification and report if Nix execution was unavailable.
+- Run `nix develop` to obtain Go 1.27, `gofmt`, `just`, Git, and a compiler for race-enabled tests; `flake.nix` and `flake.lock` pin nixpkgs. Prefer this environment for local verification and report if Nix execution was unavailable.
+- Use the Just modules in `build.just` and `check.just`: `just build` / `just build cli`, `just check` / `just check ci`, and root `just fmt`. Add new build or check subcommands as module recipes, not positional parameters. `just check` and `just check ci` must be non-mutating; `just fmt` may format sources.
 - This repository now has a `xenri` CLI skeleton supporting only `help` and `version`; it does not contain a working authorization proxy. Do not invent commands, green tests, or operational guarantees.
 
 ## Non-negotiable workflow
