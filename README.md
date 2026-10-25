@@ -93,7 +93,7 @@ go version   # Go 1.27 from the pinned nixpkgs input
 gofmt -h     # available with Go
 ```
 
-The dev shell provides Go (including `gofmt`), Git, and the C toolchain needed for `go test -race`. It supports Linux and macOS on x86-64 and ARM64. The Nix installation must have flakes enabled. Work from the PR branch when validating a PR; otherwise the branch-specific diff checks will not match.
+The dev shell provides Go (including `gofmt`), Git, and the C toolchain needed for `go test -race`. It supports Linux and macOS on x86-64 and ARM64. The committed `flake.lock` fixes the nixpkgs revision for reproducible environments; Nix must have flakes enabled. Work from the PR branch when validating a PR; otherwise the branch-specific diff checks will not match.
 
 Once inside the shell:
 
