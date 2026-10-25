@@ -85,6 +85,18 @@ Proxy subcommands, configuration schemas, and authorization-related package layo
 
 The initial CLI scaffold requires **Go 1.26 or newer** and has no external Go dependencies.
 
+For a consistent development environment, use [Nix flakes](https://wiki.nixos.org/wiki/Flakes):
+
+```bash
+nix develop
+go version   # Go 1.27 from the pinned nixpkgs input
+gofmt -h     # available with Go
+```
+
+The dev shell provides Go (including `gofmt`), Git, and the C toolchain needed for `go test -race`. It supports Linux and macOS on x86-64 and ARM64. The Nix installation must have flakes enabled. Work from the PR branch when validating a PR; otherwise the branch-specific diff checks will not match.
+
+Once inside the shell:
+
 ```bash
 go run ./cmd/xenri help
 go run ./cmd/xenri version
