@@ -66,4 +66,3 @@ When an agent changes a PR after opening it, update both blocks to match the fin
 - PR descriptions should include **Summary**, **Security / compatibility considerations**, **Verification**, and **Open questions**.
 - Human review is required before merging, even if an automated check passes.
 
-**Guiding principle:** Xenri may help an operator express or obtain authorization; Euxenion must independently verify and enforce it.
