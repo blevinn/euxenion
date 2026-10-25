@@ -2,8 +2,6 @@
 
 **Euxenion** is a policy-enforcing proxy for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It is designed to mediate access to a single upstream MCP server using declarative policy, cryptographically verifiable authorization tickets, delegated trust, and human-in-the-loop approvals.
 
-**Euxenion enforces authorization. Xenri facilitates it.**
-
 > **Project status:** Early design / initial scaffolding. The proxy, CLI, ticket handling, and approval workflows described below are planned, not yet implemented. Do not rely on this repository to enforce security policy until the implementation has undergone testing and review.
 
 ## Why Euxenion?
@@ -77,11 +75,9 @@ Approval applies to the specific invocation (and authenticated caller) by defaul
 
 **Euxenion** draws on the ancient Greek *eúxenos* (εὔξενος)—“hospitable” or “welcoming to strangers”—and the tradition of *proxenia*, in which trusted representatives helped visitors navigate relationships with other communities. The name captures the project's purpose: enabling useful interactions across boundaries through established trust and clear rules. See the [Liddell–Scott–Jones Greek lexicon](https://atlas.perseus.tufts.edu/dictionaries/entry/urn%3Acite2%3Ascaife-viewer%3Adictionaries.v1%3Alsj-n44575/) and [Oxford's Proxeny Networks project](https://proxenies.csad.ox.ac.uk/about).
 
-Euxenion is the **discerning host** for MCP interactions. It connects clients to the tools they need while ensuring that each protected invocation satisfies explicit policy and independently verifiable authorization requirements. Its hospitality makes legitimate access possible—not unconditional.
+The name suits an MCP proxy that mediates access between clients and upstream tools. Euxenion evaluates requests against policy and verified authorization evidence before forwarding permitted invocations.
 
 **Xenri** is a companion name built around the same *xen-* (“guest” or “stranger”) root. Its shorter, friendlier form suits the human-facing interface and planned CLI: a guide for operating the proxy, inspecting authorization tickets, understanding policy decisions, and coordinating approvals. The CLI may also provide local transport bridging, but a transport-only connector is not an enforcement boundary.
-
-**Xenri facilitates authorization. Euxenion enforces it.**
 
 Command names, configuration schema, and package layout are not yet stable. No working CLI commands are documented here until they actually exist.
 
