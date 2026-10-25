@@ -13,10 +13,21 @@ This file is the standing instruction set for contributors and coding agents wor
 ## Non-negotiable workflow
 
 1. **PRs only.** Work on a topic branch. Never push directly to `main`, merge a PR, enable auto-merge, or change repository administration settings without explicit human direction.
-2. Make each PR narrowly scoped and describe its intent, security implications, compatibility impact, verification, and any unresolved design questions.
+2. Make each PR narrowly scoped and describe its intent, security implications, compatibility impact, verification, and any unresolved design questions. **Agent-authored PR descriptions must include the fenced validation script and extended commit message specified below.**
 3. Do not change user-approved architectural decisions incidentally. If a change alters the trust boundary, policy semantics, or MCP interoperability, propose it clearly for review before implementation.
 4. Prefer a test or a small focused change over broad speculative scaffolding. Do not add unrelated changes to a documentation-only PR.
 5. Before declaring work complete, inspect the final diff; report what was actually tested versus what could not be tested.
+
+## Agent-authored pull request requirements
+
+**Every pull request created or updated by an agent, including documentation-only PRs, MUST include both artifacts in the PR description itself:**
+
+1. **Validation script** — a complete, copy-paste runnable shell script in a fenced `bash` code block. It must be safe to run from the repository root; use `set -euo pipefail` for Bash; fail nonzero when checks fail; and actually validate the scope of the proposed changes. Prefer existing project tooling rather than inventing commands or infrastructure. For documentation-only changes, meaningful file, formatting, and content checks are acceptable. State any prerequisites, and never use validation scripts that push, merge, modify remote state, or require secrets.
+2. **Extended commit message** — a proposed **squash-merge commit message**, in a fenced `text` code block, with a concise imperative/conventional subject, a substantive body explaining motivation and key changes, and security/compatibility and validation notes where relevant. It must describe the **whole PR**, not just the last commit, and must be ready for human review or use at merge time.
+
+Use explicit PR headings `## Validation script` and `## Extended commit message` immediately before their respective fenced blocks. Keep the **Verification** section separate: report which commands were actually run, their observed results, and any unrun checks or limitations. **Including a script does not mean it was executed.** Do not claim tests passed without having run them.
+
+When an agent changes a PR after opening it, update both blocks to match the final diff and re-evaluate verification. Missing or stale blocks make the PR incomplete even if all status checks pass.
 
 ## Security invariants
 
