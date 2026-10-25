@@ -73,9 +73,17 @@ For an **unchanged MCP client**, it must retain valid MCP behavior and provide a
 
 Approval applies to the specific invocation (and authenticated caller) by default. Redemption must be atomic and replay-safe. Ambiguous upstream outcomes must **never** cause an automatic replay of a potentially side-effecting operation.
 
-## Euxenion and Xenri
+## The names: Euxenion and Xenri
 
-**Euxenion** names the enforcement architecture and Go implementation. **Xenri** is the operator-facing persona/interface, with a single CLI binary planned to cover proxy operation, local transport bridging, policy diagnostics, ticket inspection, and approvals. The CLI will distinguish security-enforcing server operations from convenience client/transport operations; a transport-only connector is not an enforcement boundary.
+**Euxenion** is a Greek-inspired project name drawn from *eúxenos* (εὔξενος), meaning “hospitable” or “kind to strangers.” Its roots suggest *eu-* (“good” or “well”) and *xenos* (“stranger,” “guest,” or “guest-friend”). It is an evocative name, **not** a claim that the software corresponds to a specific ancient office or that “Euxenion” is a literal Greek translation. See the [Liddell–Scott–Jones Greek lexicon](https://atlas.perseus.tufts.edu/dictionaries/entry/urn%3Acite2%3Ascaife-viewer%3Adictionaries.v1%3Alsj-n44575/).
+
+The inspiration also includes *proxenia*, the ancient Greek institution through which a community recognized a *proxenos*—a public friend from another community—who could facilitate relationships and help visiting outsiders navigate unfamiliar institutions ([Oxford's Proxeny Networks project](https://proxenies.csad.ox.ac.uk/about)). An early candidate, **Proxenion**, expressed that intermediary role but sounded too similar to the generic term *proxy*. **Euxenion** preserves the association with cross-boundary hospitality and trusted relationships while having a more distinctive identity.
+
+The analogy is deliberately limited: **hospitality is not authorization**. Euxenion should not trust an unfamiliar client merely because it seeks access. It is the boundary where requests can be considered under explicit policy and independently verifiable evidence, with access granted only when the stated requirements are met.
+
+**Xenri** is a shorter, coined name sharing the *xen-* sound. It belongs to the human-facing persona/interface and proposed CLI, rather than the authorization boundary itself. The single CLI binary is planned to cover proxy operation, local transport bridging, policy diagnostics, ticket inspection, and approvals. The CLI will distinguish security-enforcing server operations from convenience client/transport operations; a transport-only connector is not an enforcement boundary.
+
+**Xenri facilitates authorization. Euxenion enforces it.**
 
 Command names, configuration schema, and package layout are not yet stable. No working CLI commands are documented here until they actually exist.
 
