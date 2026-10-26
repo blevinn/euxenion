@@ -21,7 +21,7 @@ func TestRun(t *testing.T) {
 		{name: "help flag", args: []string{"--help"}, wantOut: "MCP proxy operations are not implemented."},
 		{name: "short help flag", args: []string{"-h"}, wantOut: "Usage:\n"},
 		{name: "version", args: []string{"version"}, wantOut: "xenri " + euxenion.DevelopmentVersion() + "\n"},
-		{name: "version flag", args: []string{"--version"}, wantOut: "xenri dev\n"},
+		{name: "version flag", args: []string{"--version"}, wantOut: "xenri " + euxenion.DevelopmentVersion() + "\n"},
 		{name: "unimplemented proxy", args: []string{"proxy"}, wantStatus: 2, wantErrSubstr: `unknown command "proxy"`},
 		{name: "unknown command", args: []string{"bogus"}, wantStatus: 2, wantErrSubstr: `unknown command "bogus"`},
 		{name: "extra help argument", args: []string{"help", "unknown"}, wantStatus: 2, wantErrSubstr: "help does not accept arguments"},
