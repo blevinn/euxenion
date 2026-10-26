@@ -12,4 +12,4 @@ default:
 
 # Format Go sources in place.
 fmt:
-    gofmt -w cmd/xenri internal/cli
+    gofmt -w version.go version_test.go cmd/xenri internal/cli

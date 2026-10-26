@@ -111,28 +111,23 @@ The command intentionally does not accept proxy or approval subcommands yet. Its
 
 CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions; its Nix job also exercises the Just recipes.
 
-## Pre-release distribution (v0.0.1)
+## Releases and versioning
 
-Versioned releases use GoReleaser v2.18.3 and GitHub Actions. The first milestone is **v0.0.1**, establishing distribution only: it does **not** add an MCP proxy or authorization functionality.
+The canonical branch version is stored in the repository-root [`VERSION`](VERSION)
+file. An ordinary `go build ./cmd/xenri` embeds it and reports `xenri
+v0.0.1-dev` without external build flags or a Git tag. Official GoReleaser
+builds report the exact release tag, for example `xenri v0.0.1`; the
+publishing workflow refuses tags that disagree with `VERSION`.
 
-A reviewed change merged to `main` is not a release. An authorized maintainer deliberately creates and pushes a new `vMAJOR.MINOR.PATCH` tag pointing to a commit on `main`. The release workflow validates the tag, refuses to republish an existing release, reruns Go tests, builds a snapshot, and then publishes a GitHub **pre-release**. Do not create the tag before this PR is merged.
+The `v0.0.1` milestone establishes the release pipeline only; it does not
+implement MCP interception or authorization. Releases are explicitly triggered
+by protected version tags after human review, not automatically on merge.
 
-For local verification, install GoReleaser v2.18.3 and run:
-
-```bash
-just check release   # GoReleaser config, four archives, SHA-256 checksums and version smoke test
-```
-
-This check writes ignored `dist/` output but does not publish or require any GitHub credentials. The release workflow uses the same script. The current release matrix is Linux/macOS × amd64/arm64, packaged as `xenri_<version>_<os>_<arch>.tar.gz` with `checksums.txt`. Archive contents include the executable, README and LICENSE.
-
-To release `v0.0.1`, after reviewing and merging the PR, on an up-to-date local `main`:
-
-```bash
-git tag -a v0.0.1 -m 'Euxenion v0.0.1'
-git push origin v0.0.1
-```
-
-The human-controlled tag push is the publishing authorization. Download the resulting archive from GitHub Releases, verify it against the checksum manifest (`shasum -a 256 -c checksums.txt`), and run `xenri --version` or `xenri version`. Release builds report `xenri v0.0.1`; ordinary development builds continue to report `xenri dev`. Checksum verification detects accidental corruption, **not** a compromised publisher; signed artifacts and attestations are later hardening work.
+See **[RELEASING.md](RELEASING.md)** for the human- and agent-readable
+release procedure, local validation, GitHub ruleset requirements, version
+bumps, `release/vMAJOR.MINOR` servicing branches, backports, and tag creation.
+The `just check release` recipe validates cross-platform GoReleaser snapshot
+artifacts without publishing.
 
 ## Roadmap
 

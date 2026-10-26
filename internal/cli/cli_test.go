@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+
+	"github.com/blevinn/euxenion"
 )
 
 func TestRun(t *testing.T) {
@@ -18,7 +20,7 @@ func TestRun(t *testing.T) {
 		{name: "help", args: []string{"help"}, wantOut: "Commands:\n"},
 		{name: "help flag", args: []string{"--help"}, wantOut: "MCP proxy operations are not implemented."},
 		{name: "short help flag", args: []string{"-h"}, wantOut: "Usage:\n"},
-		{name: "version", args: []string{"version"}, wantOut: "xenri dev\n"},
+		{name: "version", args: []string{"version"}, wantOut: "xenri " + euxenion.DevelopmentVersion() + "\n"},
 		{name: "version flag", args: []string{"--version"}, wantOut: "xenri dev\n"},
 		{name: "unimplemented proxy", args: []string{"proxy"}, wantStatus: 2, wantErrSubstr: `unknown command "proxy"`},
 		{name: "unknown command", args: []string{"bogus"}, wantStatus: 2, wantErrSubstr: `unknown command "bogus"`},

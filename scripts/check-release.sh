@@ -2,6 +2,7 @@
 # Validate release packaging without publishing or requiring credentials.
 set -euo pipefail
 
+bash scripts/test-release-tag.sh
 goreleaser check
 goreleaser release --snapshot --clean
 

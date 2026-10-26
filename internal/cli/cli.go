@@ -4,10 +4,20 @@ package cli
 import (
 	"fmt"
 	"io"
+
+	"github.com/blevinn/euxenion"
 )
 
-// Version is overridden by the release build when versioned binaries exist.
-var Version = "dev"
+// Version may be stamped by the linker for an official release. An empty value
+// falls back to the source tree VERSION, with a -dev suffix.
+var Version string
+
+func effectiveVersion() string {
+	if Version != "" {
+		return Version
+	}
+	return euxenion.DevelopmentVersion()
+}
 
 const usage = `Usage:
   xenri [command]
@@ -40,7 +50,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "xenri: version does not accept arguments")
 			return 2
 		}
-		fmt.Fprintf(stdout, "xenri %s\n", Version)
+		fmt.Fprintf(stdout, "xenri %s\n", effectiveVersion())
 		return 0
 	default:
 		fmt.Fprintf(stderr, "xenri: unknown command %q\n", args[0])
