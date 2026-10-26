@@ -7,6 +7,7 @@ import (
 )
 
 // sourceVersion is the single source of truth for the version on this branch.
+//
 //go:embed VERSION
 var sourceVersion string
 
