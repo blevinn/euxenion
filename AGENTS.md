@@ -1,6 +1,6 @@
 # AGENTS.md — Euxenion contributor and coding-agent guidance
 
-This file is the standing instruction set for contributors and coding agents working in this repository. Read [README.md](README.md) first. Treat design details marked *planned* or *proposed* as provisional; do not claim unimplemented functionality exists.
+This file is the standing instruction set for contributors and coding agents working in this repository. Read [README.md](README.md) first. For releases, maintenance branches, version changes, and tags also read [RELEASING.md](RELEASING.md). Treat design details marked *planned* or *proposed* as provisional; do not claim unimplemented functionality exists.
 
 ## Project identity and scope
 
