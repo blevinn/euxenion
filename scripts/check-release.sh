@@ -14,7 +14,7 @@ for os in linux darwin; do
       printf 'Expected one %s/%s archive; found %s\n' "$os" "$arch" "${#archives[@]}" >&2
       exit 1
     fi
-    tar -tzf "${archives[0]}" | grep -qx 'xenri'
+    tar -tzf "${archives[0]}" | grep -Fx 'xenri' >/dev/null
   done
 done
 
