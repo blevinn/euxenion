@@ -3,6 +3,9 @@ name: Release
 on:
   pull_request:
   push:
+    branches:
+      - main
+      - 'release/v*'
     tags:
       - 'v*.*.*'
 
@@ -12,7 +15,7 @@ permissions:
 jobs:
   snapshot:
     name: Validate release snapshot
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +38,7 @@ jobs:
 
   publish:
     name: Publish versioned release
-    if: github.event_name == 'push'
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
       contents: write
