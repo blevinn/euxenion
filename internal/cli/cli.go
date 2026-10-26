@@ -35,7 +35,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		}
 		fmt.Fprint(stdout, usage)
 		return 0
-	case "version":
+	case "version", "--version":
 		if len(args) != 1 {
 			fmt.Fprintln(stderr, "xenri: version does not accept arguments")
 			return 2

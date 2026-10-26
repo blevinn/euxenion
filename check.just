@@ -22,3 +22,8 @@ ci: default
     test "$status" -eq 2
     test ! -s "$tmp/proxy.stdout"
     grep -Fq 'unknown command "proxy"' "$tmp/proxy.stderr"
+
+# Validate release packaging, checksums and local version without publishing.
+# Requires GoReleaser v2.18.3 on PATH; writes ignored dist/ output.
+release:
+    bash scripts/check-release.sh
