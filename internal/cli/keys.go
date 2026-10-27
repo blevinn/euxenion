@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 
