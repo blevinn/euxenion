@@ -24,7 +24,7 @@ const usage = `Usage:
 
 Commands:
   help      Show this help
-  version   Print the xenri version
+  version   Print the xenri version\n  keys      Generate, inspect and export signing keys
 
 Euxenion is under development. MCP proxy operations are not implemented.
 `
@@ -45,6 +45,8 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		}
 		fmt.Fprint(stdout, usage)
 		return 0
+	case "keys":
+		return runKeys(args[1:], stdout, stderr)
 	case "version", "--version":
 		if len(args) != 1 {
 			fmt.Fprintln(stderr, "xenri: version does not accept arguments")
