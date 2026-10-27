@@ -115,7 +115,7 @@ CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on
 
 The canonical branch version is stored in the repository-root [`VERSION`](VERSION)
 file. An ordinary `go build ./cmd/xenri` embeds it and reports `xenri
-v0.0.1-dev` without external build flags or a Git tag. Official GoReleaser
+v0.0.5-dev` without external build flags or a Git tag. Official GoReleaser
 builds report the exact release tag, for example `xenri v0.0.1`; the
 publishing workflow refuses tags that disagree with `VERSION`.
 
