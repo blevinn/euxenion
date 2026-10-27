@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "iss": "issuer.external",
+  "aud": "proxy.demo",
+  "principal": "operator:one",
+  "upstream": "upstream:one",
+  "method": "tools/call",
+  "tool": "write",
+  "arguments": {"message": "demo"},
+  "claims": {"approved_by": "operator"},
+  "valid_for_seconds": 300
+}
