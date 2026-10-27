@@ -38,6 +38,6 @@ func TestFileSafety(t *testing.T){
  if _,e:=ReadEncrypted(unsafe);!errors.Is(e,ErrUnsafe){t.Fatal(e)}
  link:=filepath.Join(dir,"link")
  if e:=os.Symlink(p,link);e==nil{if _,e:=ReadEncrypted(link);!errors.Is(e,ErrUnsafe){t.Fatal(e)}}
- if _,e:=ParsePublic([]byte("bad"));!errors.Is(e,ErrInvalid){t.Fatal(e)}
+ if _,_,_,e:=ParsePublic([]byte("bad"));!errors.Is(e,ErrInvalid){t.Fatal(e)}
  if _,e:=AlgorithmOf(ed25519.PublicKey(make([]byte,20)));!errors.Is(e,ErrInvalid){t.Fatal(e)}
 }
