@@ -153,14 +153,29 @@ func EncryptPrivate(pair Pair,password []byte)([]byte,error){
 func decodeEnvelope(data []byte)(Envelope,error){
  var env Envelope
  if len(data)<100 || len(data)>16384{return env,ErrInvalid}
+ // Reject duplicate fields before Go's ordinary decoder can accept the last
+ // value. The envelope has only primitive JSON values.
+ check:=json.NewDecoder(bytes.NewReader(data))
+ first,e:=check.Token();if e!=nil || first!=json.Delim('{'){return env,ErrInvalid}
+ seen:=make(map[string]bool)
+ for check.More(){
+  key,e:=check.Token();if e!=nil{return env,ErrInvalid}
+  k,ok:=key.(string);if !ok || seen[k]{return env,ErrInvalid}
+  seen[k]=true
+  value,e:=check.Token();if e!=nil{return env,ErrInvalid}
+  if _,nested:=value.(json.Delim);nested{return env,ErrInvalid}
+ }
+ end,e:=check.Token();if e!=nil||end!=json.Delim('}'){return env,ErrInvalid}
+ _,e=check.Token();if e!=io.EOF{return env,ErrInvalid}
  dec:=json.NewDecoder(bytes.NewReader(data));dec.DisallowUnknownFields()
  if e:=dec.Decode(&env);e!=nil{return env,ErrInvalid}
  var extra any
  if e:=dec.Decode(&extra);e!=io.EOF{return env,ErrInvalid}
  if env.Version!=1 || !signatures.Supported(env.Algorithm) ||
-  env.ID=="" || len(env.ID)>64 || env.KDF!="PBKDF2-HMAC-SHA256" ||
+  len(env.ID)!=22 || env.KDF!="PBKDF2-HMAC-SHA256" ||
   env.Cipher!="AES-256-GCM" || env.Iterations<600000 || env.Iterations>2000000{return env,ErrInvalid}
- for _,c:=range env.ID{if !((c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9')||c=='_'||c=='-'){return env,ErrInvalid}}
+ id,eid:=base64.RawURLEncoding.DecodeString(env.ID)
+ if eid!=nil || len(id)!=16 || base64.RawURLEncoding.EncodeToString(id)!=env.ID{return env,ErrInvalid}
  salt,e1:=base64.RawURLEncoding.DecodeString(env.Salt)
  nonce,e2:=base64.RawURLEncoding.DecodeString(env.Nonce)
  ct,e3:=base64.RawURLEncoding.DecodeString(env.Ciphertext)
@@ -196,8 +211,13 @@ func readSafe(path string, secret bool)([]byte,error){
  info,e:=os.Lstat(path)
  if e!=nil{return nil,ErrUnsafe}
  if !info.Mode().IsRegular() || info.Mode()&os.ModeSymlink!=0 || (secret && info.Mode().Perm()&0077!=0){return nil,ErrUnsafe}
- f,e:=os.Open(path);if e!=nil{return nil,ErrUnsafe}
+ fd,e:=syscall.Open(path,syscall.O_RDONLY|syscall.O_NOFOLLOW,0)
+ if e!=nil{return nil,ErrUnsafe}
+ f:=os.NewFile(uintptr(fd),path)
  defer f.Close()
+ opened,e:=f.Stat()
+ if e!=nil || !os.SameFile(info,opened) || !opened.Mode().IsRegular() ||
+ (secret && opened.Mode().Perm()&0077!=0){return nil,ErrUnsafe}
  b,e:=io.ReadAll(io.LimitReader(f,16385));if e!=nil || len(b)>16384{return nil,ErrUnsafe}
  return b,nil
 }
