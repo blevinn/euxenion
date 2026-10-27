@@ -2,7 +2,7 @@ name: Go
 
 on:
   push:
-    branches: [main]
+    branches: [main, "release/v*"]
   pull_request:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
           cache: false # No external modules yet.
       - name: Check formatting
         run: |
-          unformatted="$(gofmt -l cmd/xenri internal/cli)"
+          unformatted="$(gofmt -l version.go version_test.go cmd/xenri internal/cli)"
           if [[ -n "$unformatted" ]]; then
             printf 'Files not formatted with gofmt:\n%s\n' "$unformatted"
             exit 1
@@ -41,7 +41,7 @@ jobs:
         run: go build -o "$RUNNER_TEMP/xenri" ./cmd/xenri
       - name: Smoke test CLI
         run: |
-          test "$("$RUNNER_TEMP/xenri" version)" = 'xenri dev'
+          test "$("$RUNNER_TEMP/xenri" version)" = "xenri v$(cat VERSION)-dev"
           "$RUNNER_TEMP/xenri" --help | grep -Fq 'MCP proxy operations are not implemented.'
   nix:
     name: Nix dev shell
@@ -71,5 +71,5 @@ jobs:
             just build
             test -x dist/xenri
             just fmt
-            git diff --exit-code -- cmd/xenri internal/cli
+            git diff --exit-code -- version.go version_test.go cmd/xenri internal/cli
           '

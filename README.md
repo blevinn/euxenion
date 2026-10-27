@@ -111,14 +111,30 @@ The command intentionally does not accept proxy or approval subcommands yet. Its
 
 CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions; its Nix job also exercises the Just recipes.
 
+## Releases and versioning
+
+The canonical branch version is stored in the repository-root [`VERSION`](VERSION)
+file. An ordinary `go build ./cmd/xenri` embeds it and reports `xenri
+v0.0.1-dev` without external build flags or a Git tag. Official GoReleaser
+builds report the exact release tag, for example `xenri v0.0.1`; the
+publishing workflow refuses tags that disagree with `VERSION`.
+
+The `v0.0.1` milestone establishes the release pipeline only; it does not
+implement MCP interception or authorization. Releases are explicitly triggered
+by protected version tags after human review, not automatically on merge.
+
+See **[RELEASING.md](RELEASING.md)** for the human- and agent-readable
+release procedure, local validation, GitHub ruleset requirements, version
+bumps, `release/vMAJOR.MINOR` servicing branches, backports, and tag creation.
+The `just check release` recipe validates cross-platform GoReleaser snapshot
+artifacts without publishing.
+
 ## Roadmap
 
-1. Define the MCP interception boundary, threat model, versioned ticket and challenge schemas, and policy contract.
-2. Scaffold the Go module, minimal `xenri` command, and CI (this PR); add configuration schema and validation before implementing proxy operations.
-3. Implement transparent single-upstream MCP transport and identity propagation.
-4. Add signature verification, canonical invocation binding, policy evaluation, and negative-path tests.
-5. Add durable approval state, atomic redemption, audit events, and enhanced-client interoperability.
-6. Perform adversarial testing and document deployment / trust assumptions before describing the proxy as production-ready.
+1. **v0.0.1 — Release mechanism:** publish tested, versioned Xenri executables with checksums; keep manual tag creation as the release gate.
+2. **v0.0.5 — Cryptographic foundation (planned):** establish algorithm-agile, versioned tickets, key management, trusted-issuer configuration, signing and independent verification.
+3. **v0.1.0 — Functional MCP MVP (planned):** proxy one upstream MCP server, evaluate policy, handle approval challenges and enforce atomic redemption and audit.
+4. Later releases may expand MCP transports, enhanced-client workflows, and security hardening. No authorization proxy functionality is implemented yet.
 
 This is a direction of travel, not a claim that these milestones are complete.
 

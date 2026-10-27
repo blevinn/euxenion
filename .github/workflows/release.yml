@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'release/v*'
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    name: Validate release snapshot
+    if: github.event_name == 'pull_request' || github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.x'
+          cache: false
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+        with:
+          version: v2.18.3
+          install-only: true
+      - name: Validate artifacts and local version
+        run: bash scripts/check-release.sh
+
+  publish:
+    name: Publish versioned release
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate release tag and prevent republishing
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          bash scripts/check-release-tag.sh "$GITHUB_REF_NAME"
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME")"
+          case "$status" in
+            404) ;;
+            200) echo "A release already exists for $GITHUB_REF_NAME" >&2; exit 1 ;;
+            *) echo "Could not verify release absence (HTTP $status)" >&2; exit 1 ;;
+          esac
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.x'
+          cache: false
+      - name: Run tests
+        run: |
+          go vet ./...
+          go test -race ./...
+          bash scripts/test-release-tag.sh
+          test -z "$(gofmt -l version.go version_test.go cmd/xenri internal/cli)"
+          go build -ldflags "-X github.com/blevinn/euxenion/internal/cli.Version=$GITHUB_REF_NAME" -o "$RUNNER_TEMP/xenri" ./cmd/xenri
+          test "$("$RUNNER_TEMP/xenri" --version)" = "xenri $GITHUB_REF_NAME"
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+        with:
+          version: v2.18.3
+          install-only: true
+      - name: Validate release artifacts
+        run: bash scripts/check-release.sh
+      - name: Publish GitHub pre-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: goreleaser release --clean
