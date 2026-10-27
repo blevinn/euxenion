@@ -2,7 +2,7 @@
 
 **Euxenion** is a policy-enforcing proxy for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It is designed to mediate access to a single upstream MCP server using declarative policy, cryptographically verifiable authorization tickets, delegated trust, and human-in-the-loop approvals.
 
-> **Project status:** Initial Go scaffolding. The `xenri` command supports only `help` and `version`; no MCP proxy, policy enforcement, authorization tickets, or approval workflow has been implemented. This repository cannot yet secure access to an MCP server.
+> **Project status:** Offline cryptographic tooling is under development through stacked PRs. Xenri supports key lifecycle and offline ticket sign/verify flows on these branches; there is **no running MCP proxy, policy enforcement, approval workflow or replay prevention**. This repository cannot yet secure access to an MCP server.
 
 ## Why Euxenion?
 
@@ -109,7 +109,7 @@ just fmt         # format Go sources in place
 
 `build` and `check` are actual Just modules (`build.just` and `check.just`), not parameters on a single recipe. `just build` and `just check` invoke each module's default recipe. Output is written to the ignored `dist/` directory.
 
-The command intentionally does not accept proxy or approval subcommands yet. It now includes the **offline** `keys` generation, inspection and public-export commands described in [Key formats and lifecycle](docs/keys-v1.md); these are not MCP authorization. Its entry point is `cmd/xenri`; `internal/cli` contains testable argument handling separate from process exit and I/O setup. Future security-sensitive components will be introduced only alongside their protocol contracts and tests.
+The command intentionally does not accept proxy or approval subcommands yet. It includes offline `keys` lifecycle commands ([key format](docs/keys-v1.md)) and `tickets sign|verify` commands ([interoperability workflow](docs/tickets-cli.md)); successful verification is **not** MCP authorization. Its entry point is `cmd/xenri`; `internal/cli` contains testable argument handling separate from process exit and I/O setup. Future security-sensitive components will be introduced only alongside their protocol contracts and tests.
 
 CI runs formatting, vetting, race-enabled tests, a build, and CLI smoke tests on supported Go versions; its Nix job also exercises the Just recipes.
 
