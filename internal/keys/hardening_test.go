@@ -33,9 +33,9 @@ func TestEnvelopeAdversarial(t *testing.T){
   if _,e:=DecryptPrivate(data,pw);e==nil{t.Fatal("accepted tampered envelope")}
  })}
  duplicate:=bytes.Replace(source,[]byte(`"v":1,`),[]byte(`"v":1,"v":1,`),1)
- if _,e:=InspectEncrypted(duplicate);!errors.Is(e,ErrInvalid){t.Fatalf("duplicate accepted: %v",e)}
+ if _,_,e:=InspectEncrypted(duplicate);!errors.Is(e,ErrInvalid){t.Fatalf("duplicate accepted: %v",e)}
  malformed:=bytes.Replace(source,[]byte(`"kdf":"PBKDF2-HMAC-SHA256",`),[]byte(`"kdf":"PBKDF2-HMAC-SHA256","unknown":1,`),1)
- if _,e:=InspectEncrypted(malformed);!errors.Is(e,ErrInvalid){t.Fatalf("unknown accepted: %v",e)}
+ if _,_,e:=InspectEncrypted(malformed);!errors.Is(e,ErrInvalid){t.Fatalf("unknown accepted: %v",e)}
  if _,e:=DecryptPrivate(source,[]byte("another incorrect test password"));!errors.Is(e,ErrDecrypt){t.Fatal(e)}
  if _,e:=DecryptPrivate(source,nil);!errors.Is(e,ErrUnsafe){t.Fatal(e)}
 }
