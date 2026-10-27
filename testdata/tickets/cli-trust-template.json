@@ -1,0 +1,15 @@
+{
+  "v": 1,
+  "issuers": [
+    {
+      "id": "issuer.external",
+      "keys": [
+        {
+          "kid": "REPLACE_WITH_KID_FROM_KEYS_INSPECT",
+          "alg": "Ed25519",
+          "public_key": "issuer.pem"
+        }
+      ]
+    }
+  ]
+}
