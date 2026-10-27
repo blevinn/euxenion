@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "subject": "ticket-v1-structural-cases",
+  "notes": "Unsigned structural manifest, not valid signed tickets. Implementers must synthesize/sign test vectors; these examples contain no secrets.",
+  "cases": [
+    {
+      "name": "supported_ed25519",
+      "alg": "Ed25519",
+      "expected": "accept_if_trusted_and_signed"
+    },
+    {
+      "name": "supported_es256",
+      "alg": "ES256",
+      "expected": "accept_if_trusted_and_signed"
+    },
+    {
+      "name": "none_alg",
+      "alg": "none",
+      "expected": "unsupported"
+    },
+    {
+      "name": "legacy_eddsa",
+      "alg": "EdDSA",
+      "expected": "unsupported"
+    },
+    {
+      "name": "missing_kid",
+      "mutation": "remove protected kid",
+      "expected": "malformed"
+    },
+    {
+      "name": "duplicate_iss",
+      "mutation": "duplicate payload iss JSON member",
+      "expected": "malformed"
+    },
+    {
+      "name": "duplicate_nested_claim",
+      "mutation": "duplicate claims object member",
+      "expected": "malformed"
+    },
+    {
+      "name": "wrong_audience",
+      "mutation": "different aud",
+      "expected": "invalid_binding"
+    },
+    {
+      "name": "wrong_digest",
+      "mutation": "different inv.sha256",
+      "expected": "invalid_binding"
+    },
+    {
+      "name": "expired",
+      "mutation": "now equals exp",
+      "expected": "invalid_time"
+    },
+    {
+      "name": "untrusted_issuer",
+      "mutation": "iss not in configured trust",
+      "expected": "untrusted"
+    },
+    {
+      "name": "wrong_key_algorithm",
+      "mutation": "protected alg differs from trusted key alg",
+      "expected": "untrusted"
+    },
+    {
+      "name": "modified_payload",
+      "mutation": "change signed bytes after signing",
+      "expected": "invalid_signature"
+    },
+    {
+      "name": "overlong_ticket",
+      "mutation": "JWS exceeds 8192 bytes",
+      "expected": "malformed"
+    },
+    {
+      "name": "unknown_payload_key",
+      "mutation": "add unexpected JSON field",
+      "expected": "malformed"
+    }
+  ]
+}
