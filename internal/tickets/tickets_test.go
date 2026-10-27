@@ -39,11 +39,16 @@ func TestTicketRoundTrip(t *testing.T){
    ev.Claims["approver"]="mutated"
    ev2,e:=Verify(token,p.Audience,p.Invocation.SHA256,reg,now)
    if e!=nil||ev2.Claims["approver"]!="human"{t.Fatal("evidence alias or verification failure",e)}
+   corrupted:=strings.Split(token,".")
+   rawSignature,_:=base64.RawURLEncoding.DecodeString(corrupted[2])
+   rawSignature[0]^=1
+   corrupted[2]=base64.RawURLEncoding.EncodeToString(rawSignature)
+   corruptedToken:=strings.Join(corrupted,".")
    for _,bad:=range []struct{name,ticket,aud,digest string; clock time.Time;want error}{
     {"wrong audience",token,"proxy.other",p.Invocation.SHA256,now,ErrInvalidBinding},
     {"wrong binding",token,p.Audience,base64.RawURLEncoding.EncodeToString(make([]byte,32-1)),now,ErrInvalidBinding},
     {"expired",token,p.Audience,p.Invocation.SHA256,time.Unix(p.Expires,0),ErrInvalidTime},
-    {"invalid signature",token[:len(token)-1]+"A",p.Audience,p.Invocation.SHA256,now,ErrInvalidSignature},
+    {"invalid signature",corruptedToken,p.Audience,p.Invocation.SHA256,now,ErrInvalidSignature},
    }{
     t.Run(bad.name,func(t *testing.T){_,e:=Verify(bad.ticket,bad.aud,bad.digest,reg,bad.clock);if !errors.Is(e,bad.want){t.Fatalf("wanted %v got %v",bad.want,e)}})
    }
