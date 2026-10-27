@@ -1,0 +1,9 @@
+# Version 1 authorization ticket library
+
+`internal/tickets` issues and verifies Euxenion's strict v1 compact JWS evidence envelope per [ADR 0001](adr/0001-ticket-profile.md). The protected header contains `typ=euxenion.ticket.v1`, `alg=Ed25519|ES256` and a configured `kid`. Payload includes `v`, `iss`, exact single `aud`, 128-bit `jti`, integer Unix `iat`/`exp`, optional `nbf`, `inv:{v:1,sha256:<43-character-base64url>}`, bounded flat string `claims`, and optional 128-bit challenge ID.
+
+A caller issues an evidence ticket using `Issue(payload, pair)` with an explicitly loaded private key; the caller is responsible for validating asserted claims. `Verify(compact, expectedAudience, trustedInvocationDigest, trustRegistry, clock)` rejects malformed or unknown fields, duplicate keys, unsigned/unsupported algorithms, bad issuer-key-alg trust matches, forged signatures, invalid invocation/audience bindings and invalid validity times. On success it returns issuer-qualified **Evidence** with a copy of claims, not `allow` or any dispatch permission. A ticket's cryptographic success is repeatable: there is **no** ticket ID redemption, claim-to-policy translation, runtime MCP interception, challenge-state lookup or replay prevention in 0.0.5.
+
+The exact signing bytes are the original ASCII protected/payload base64url segments joined with a period; no unprotected headers, JWE, nested JWT, `b64:false`, padded base64url or algorithm negotiation is accepted. Ed25519 uses the Euxenion v1 name, not JOSE generic `EdDSA`, so external issuers must deliberately implement this profile.
+
+All error returns are one of `malformed`, `unsupported`, `untrusted`, `invalid signature`, `invalid binding`, `invalid time` and `internal`; do not log tokens, keys, passwords or tool arguments when surfacing these categories. A caller must supply expected audience and invocation from **trusted** configuration/identity provenance rather than client-controlled `_meta` fields.
