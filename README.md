@@ -43,6 +43,8 @@ The planned proxy will handle MCP transport and protocol interactions while keep
 
 ### Authorization tickets
 
+The proposed cryptographic evidence wire contract, rejection behavior and v0.0.5 threat model are specified in [ADR 0001](docs/adr/0001-ticket-profile.md). This profile is **not live MCP enforcement**, and successful signature verification is not approval or replay prevention.
+
 The intended ticket format is a versioned, signed JWS/JWT profile, initially using Ed25519 (EdDSA). Tickets carry conventional issuer, audience, subject, issuance/validity, and unique-ID claims plus namespaced authorization claims.
 
 A ticket may be bound to a canonical invocation descriptor, including the authenticated principal, proxy/upstream identity, MCP method or tool, and exact arguments. The current design calls for SHA-256 over RFC 8785 JSON Canonicalization Scheme (JCS) data to construct invocation bindings.
