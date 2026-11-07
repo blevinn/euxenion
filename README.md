@@ -1,6 +1,6 @@
 # Euxenion
 
-**Euxenion** is a policy-enforcing proxy for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It is designed to mediate access to a single upstream MCP server using declarative policy, cryptographically verifiable authorization tickets, delegated trust, and human-in-the-loop approvals.
+**Euxenion** is a planned policy-enforcing capability gateway for autonomous workloads. Its first implementation target is a proxy for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), mediating a single upstream MCP server using declarative policy, verifiable authorization tickets, delegated trust, and human-in-the-loop approvals. Longer-term protocol families under consideration are AI inference, native Git smart HTTP, and generic HTTP/SOCKS network egress.
 
 > **Project status:** Initial Go scaffolding. The `xenri` command supports only `help` and `version`; no MCP proxy, policy enforcement, authorization tickets, or approval workflow has been implemented. This repository cannot yet secure access to an MCP server.
 
@@ -17,10 +17,16 @@ The proxy evaluates each policy-controlled invocation using the authenticated ca
 - **Equal footing for authorities.** Internal and external ticket issuers use the same verification and policy mechanisms. Trust is explicit, not inferred from origin.
 - **Narrow approvals by default.** Human approval is bound to one precise invocation. Broader grants are possible only when policy explicitly permits them.
 - **Preserve MCP compatibility.** Unmodified clients must be supported; clients that understand Euxenion-specific metadata may offer a richer approval experience.
-- **One upstream boundary.** A proxy instance mediates a single upstream MCP server. Routing and multi-upstream orchestration are outside the initial scope.
+- **Bounded MVP.** The first proxy instance mediates one configured upstream MCP server. Other protocols and multi-upstream routing are not part of the initial MVP.
+- **Protocol-aware enforcement.** A connection-level grant is not an application-level or semantic authorization. Each frontend must expose what it can actually verify and enforce.
+- **One shared identity and policy core.** Future frontends should reuse authenticated identity, ticket verification, policy, admission and audit while preserving protocol-native interactions.
 - **Auditable decisions.** Authorization outcomes and ticket consumption should be explainable without leaking secrets.
 
-## Planned architecture
+## Strategy and engineering design
+
+The [capability-gateway strategy](docs/strategy.md) and [engineering architecture](docs/architecture.md) describe the proposed long-term design across MCP, inference, Git, and network egress. Those documents are **proposals**, not implementations, release commitments, or a change to the currently approved MVP. The architecture separates protocol-specific frontends from a common authorization and accounting core; the first working boundary remains a single upstream MCP server.
+
+## Planned MCP MVP architecture
 
 ```text
 Existing or enhanced MCP client
@@ -75,7 +81,7 @@ Approval applies to the specific invocation (and authenticated caller) by defaul
 
 **Euxenion** draws on the ancient Greek *eúxenos* (εὔξενος)—“hospitable” or “welcoming to strangers”—and the tradition of *proxenia*, in which trusted representatives helped visitors navigate relationships with other communities. The name captures the project's purpose: enabling useful interactions across boundaries through established trust and clear rules. See the [Liddell–Scott–Jones Greek lexicon](https://atlas.perseus.tufts.edu/dictionaries/entry/urn%3Acite2%3Ascaife-viewer%3Adictionaries.v1%3Alsj-n44575/) and [Oxford's Proxeny Networks project](https://proxenies.csad.ox.ac.uk/about).
 
-The name suits an MCP proxy that mediates access between clients and upstream tools. Euxenion evaluates requests against policy and verified authorization evidence before forwarding permitted invocations.
+The name suits a capability gateway that mediates access between clients and upstream tools and services. Euxenion evaluates requests against policy and verified authorization evidence before forwarding permitted invocations.
 
 **Xenri** is a companion name built around the same *xen-* (“guest” or “stranger”) root. Its shorter form suits the human-facing interface and CLI. The initial `xenri` executable offers help and version reporting; future commands will support proxy operation, ticket inspection, policy diagnostics, approvals, and potentially local transport bridging. A transport-only connector is not an enforcement boundary.
 
@@ -134,7 +140,7 @@ artifacts without publishing.
 1. **v0.0.1 — Release mechanism:** publish tested, versioned Xenri executables with checksums; keep manual tag creation as the release gate.
 2. **v0.0.5 — Cryptographic foundation (planned):** establish algorithm-agile, versioned tickets, key management, trusted-issuer configuration, signing and independent verification.
 3. **v0.1.0 — Functional MCP MVP (planned):** proxy one upstream MCP server, evaluate policy, handle approval challenges and enforce atomic redemption and audit.
-4. Later releases may expand MCP transports, enhanced-client workflows, and security hardening. No authorization proxy functionality is implemented yet.
+4. **Beyond 0.1.0 (proposals only):** consider a Git smart HTTP frontend, focused inference gateway, and, later, HTTP CONNECT/SOCKS5 egress. Release mapping and implementation order are not approved. No authorization proxy functionality is implemented yet.
 
 This is a direction of travel, not a claim that these milestones are complete.
 

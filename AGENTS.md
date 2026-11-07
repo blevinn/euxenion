@@ -4,9 +4,10 @@ This file is the standing instruction set for contributors and coding agents wor
 
 ## Project identity and scope
 
-- **Euxenion** is the policy-enforcing MCP proxy and underlying architecture.
+- **Euxenion** is intended to be a protocol-aware capability gateway; the **first deliverable remains a policy-enforcing MCP proxy**. Read [docs/strategy.md](docs/strategy.md) and [docs/architecture.md](docs/architecture.md) for proposed longer-term inference, Git, and HTTP/SOCKS egress directions. These are *not* current features or release commitments.
 - **Xenri** is the planned human-facing interface/persona and CLI. Its convenient transport/client features do **not** substitute for server-side enforcement.
-- The initial boundary is **one downstream client connection to one configured upstream MCP server** per proxy instance; avoid silently expanding the trust boundary or introducing implicit multi-upstream routing.
+- The initial boundary is **one downstream client connection to one configured upstream MCP server** per proxy instance; avoid silently expanding the trust boundary or introducing implicit multi-upstream routing. Do not add inference, Git or generic egress to the 0.0.5/0.1.0 deliverables without an explicit reviewed scope change.
+- Future protocol frontends must share authenticated identity, policy, evidence, and audit without conflating connection, HTTP, application, and semantic enforcement. A SOCKS/CONNECT tunnel cannot establish the content of an encrypted application request; generic egress must not bypass stronger protocol-specific policy.
 - The project uses **Go**. `cmd/xenri` is the executable entry point and `internal/cli` contains CLI argument handling. Keep future MCP transport, authenticated identity, ticket verification, policy evaluation, approval/redemption state, and auditing separate. OPA/Rego, Ed25519 JWS/JWT, and SQLite remain proposals requiring a concrete ADR/spec before becoming stable APIs.
 - Run `nix develop` to obtain Go 1.27, `gofmt`, `just`, Git, and a compiler for race-enabled tests; `flake.nix` and `flake.lock` pin nixpkgs. Prefer this environment for local verification and report if Nix execution was unavailable.
 - Use the Just modules in `build.just` and `check.just`: `just build` / `just build cli`, `just check` / `just check ci`, and root `just fmt`. Add new build or check subcommands as module recipes, not positional parameters. `just check` and `just check ci` must be non-mutating; `just fmt` may format sources.
@@ -42,6 +43,15 @@ When an agent changes a PR after opening it, update both blocks to match the fin
 - **Honor protocol boundaries:** namespaced MCP `_meta` is the intended location for optional authorization evidence. Do not inject synthetic authorization fields into upstream tool `arguments` or leak evidence upstream unless explicitly required and safe.
 - **Avoid information leaks:** never log full authorization tokens, signing keys, credentials, sensitive arguments, or unnecessarily detailed denials. Audit records should be privacy-conscious and tamper-evident where feasible.
 - **No shortcuts for dev mode:** test-only bypasses must not be enabled by default or reachable in production paths.
+
+## Future frontend security requirements (not yet implemented)
+
+- Authenticate workload identity independently of client-supplied names, URLs, headers, and claims; restrict upstream routing and credential injection.
+- Declare verified facts and enforcement limitations for each frontend. Missing visibility must not become a policy bypass or a silent downgrade to generic network authorization.
+- Git smart HTTP should preserve native packfile transfer. Repository-scope reads are the default; protected-ref push semantics need protocol parsing and upstream state/host protection.
+- Inference metering and shared budgets need atomic admission reservations and settlement, not just signed spend tickets; avoid unnecessary prompt logging.
+- SOCKS/HTTP CONNECT provides connection-level visibility only. Sandbox enforcement must block direct egress, cover DNS/IPv6/UDP bypass paths, and guard against SSRF and DNS rebinding.
+- Any new frontend requires a scoped ADR, protocol and adversarial tests, and explicit compatibility/security guarantees before code lands.
 
 ## MCP compatibility
 
